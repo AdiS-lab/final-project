@@ -1,4 +1,4 @@
-import {Card} from '../components/Cards.tsx'
+import {Card} from '../Components/Cards.tsx'
 import {Link} from 'react-router-dom'
 
 export function NavBar(){
