@@ -7,7 +7,6 @@ import {normalizePoints} from '../HelperFunctions/helperFunctions'
 import { Stage, Layer, Image, Circle } from 'react-konva'
 import Konva from 'konva'
 import axios from 'axios'
-import Sidebar from '../Components/CanvasSidebar'
 
 function Canvas() {
   let classes = ["STOP", "CLOSE", "POINTER", "OK", "ERASE", "DRAW", "ZOOM IN", "ZOOM OUT"]
@@ -451,7 +450,7 @@ function Canvas() {
   return (
     <div className='flex flex-row w-full h-screen overflow-hidden' style={{ background: '#0a0a0a', fontFamily: 'Inter, system-ui, sans-serif' }}>
       {/* grid grid-cols-[100px_2fr_1fr] */}
-      <Sidebar endSession = {endSession} onStart = {startWebcam} onStop = {stopWebcam} clearAll = {clearAll} switchCanvas = {switchOutCanvas} webcamActive = {webcamSelected}/>
+      {/* <Sidebar endSession = {endSession} onStart = {startWebcam} onStop = {stopWebcam} clearAll = {clearAll} switchCanvas = {switchOutCanvas} webcamActive = {webcamSelected}/> */}
         <div className = 'grid grid-cols-[1fr_200px] w-full'>
           <div ref = {container} className = 'h-full bg-white relative overflow-hidden' >
             {w>1 && <Stage width = {w} height = {h} ref = {stageRef} onWheel = {(e)=>{onWheel(e)}}> 

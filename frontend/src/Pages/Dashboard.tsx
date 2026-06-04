@@ -1,5 +1,4 @@
 import Gallery from './Gallery'
-import DashboardSidebar from '../Components/SidebarDashboard'
 import {useRef, useState, useEffect} from 'react'
 import axios from 'axios'
 
@@ -79,7 +78,7 @@ function Dashboard(){
     return(
         <>
             <div className= 'flex flex-row w-full h-screen overflow-hidden'>
-                <DashboardSidebar onClick = {goToCanvas}/>
+                {/* <DashboardSidebar onClick = {goToCanvas}/> */}
                 <Gallery imgArr = {imgArr}  handleClick = {handleClick}/>
             </div>
             <dialog ref={dialogRef} className='w-[360px] rounded-xl border border-[#2a2a2a]' style={{ background: 'rgba(22, 22, 22, 0.92)', color: '#d0d0d0' }}>
