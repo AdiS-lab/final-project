@@ -1,5 +1,4 @@
 
-import {Link} from 'react-router-dom'
 import {NavBar, HeroSection, Section1, Section2, Pricing, Footer} from './FirstSection.tsx'
 import '../index.css'
 

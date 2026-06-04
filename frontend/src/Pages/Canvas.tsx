@@ -3,8 +3,8 @@ import {useParams, useNavigate} from 'react-router-dom'
 import { GestureRecognizer, FilesetResolver, DrawingUtils} from '@mediapipe/tasks-vision';
 import * as tf from '@tensorflow/tfjs'
 import type { LayersModel } from '@tensorflow/tfjs'
-import {normalizePoints} from '../HelperFunctions/helperFunctions.tsx'
-import Sidebar from '../Components/Sidebar.tsx'
+import {normalizePoints} from '../HelperFunctions/helperFunctions'
+import Sidebar from '../Components/Sidebar'
 import { Stage, Layer, Image, Circle } from 'react-konva'
 import Konva from 'konva';
 import axios from 'axios';
@@ -425,6 +425,7 @@ function Canvas() {
 
   function b64toBlob(url: string){
     const [data, base64] = url.split(',')
+    console.log(data)
 
     const chars = atob(base64) // converts base64 data into chars that represnt a byte
     const byteNumbers = new Array(chars.length)

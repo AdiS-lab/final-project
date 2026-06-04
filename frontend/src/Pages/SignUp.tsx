@@ -1,5 +1,4 @@
 import {Link} from 'react-router-dom'
-import {useRef} from 'react'
 import axios from 'axios'
 
 export default function SignUp(){

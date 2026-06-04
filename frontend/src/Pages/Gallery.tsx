@@ -1,4 +1,4 @@
-import GalleryCards from '../Components/GalleryCards.tsx'
+import GalleryCards from '../Components/GalleryCards'
 
 type imgArr = {
     imgArr:{imgUrl: string, imgId: string}[], 
