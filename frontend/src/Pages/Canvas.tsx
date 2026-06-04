@@ -4,10 +4,10 @@ import { GestureRecognizer, FilesetResolver, DrawingUtils} from '@mediapipe/task
 import * as tf from '@tensorflow/tfjs'
 import type { LayersModel } from '@tensorflow/tfjs'
 import {normalizePoints} from '../HelperFunctions/helperFunctions'
-import Sidebar from '../Components/Sidebar'
 import { Stage, Layer, Image, Circle } from 'react-konva'
-import Konva from 'konva';
-import axios from 'axios';
+import Konva from 'konva'
+import axios from 'axios'
+import Sidebar from '../Components/Sidebar'
 
 function Canvas() {
   let classes = ["STOP", "CLOSE", "POINTER", "OK", "ERASE", "DRAW", "ZOOM IN", "ZOOM OUT"]

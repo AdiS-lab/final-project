@@ -1,5 +1,5 @@
-import Gallery from './Gallery.tsx'
-import DashboardSidebar from '../Components/DashboardSidebar.tsx'
+import Gallery from './Gallery'
+import DashboardSidebar from '../Components/DashboardSidebar'
 import {useRef, useState, useEffect} from 'react'
 import axios from 'axios'
 
