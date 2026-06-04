@@ -1,7 +1,7 @@
 
 import {Link} from 'react-router-dom'
-import {NavBar, HeroSection, Section1, Section2, Pricing, Footer} from './Pages/FirstSection.tsx'
-import './index.css'
+import {NavBar, HeroSection, Section1, Section2, Pricing, Footer} from './FirstSection.tsx'
+import '../index.css'
 
 export default function LandingPage(){
     return(

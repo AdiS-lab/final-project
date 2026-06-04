@@ -2,12 +2,12 @@ import { StrictMode } from 'react'
 import { createRoot } from 'react-dom/client'
 import {createBrowserRouter, RouterProvider} from 'react-router-dom'
 
-import Gallery from './Pages/Gallery.tsx'
 import Canvas  from './Pages/Canvas.tsx'
-import LandingPage from './LandingPage.tsx'
+import LandingPage from './Pages/LandingPage.tsx'
 import SignUp from './Pages/SignUp.tsx'
 import Login from './Pages/LogIn.tsx'
 import ErrorHandle from './ErrorHandle.tsx'
+import Dashboard from './Pages/Dashboard.tsx'
 import './index.css'
 import axios from "axios"
 
@@ -20,12 +20,8 @@ const router = createBrowserRouter([
     errorElement:<ErrorHandle />
   },
   {
-  path: '/canvas',
+  path: '/canvas/:id',
   element: <Canvas />,
-  children:[{
-    path:'/canvas/gallery',
-    element: <Gallery />
-  }]
   },
   {
     path: '/signup',
@@ -34,6 +30,10 @@ const router = createBrowserRouter([
   {
     path: '/login',
     element: <Login />
+  },
+  {
+    path:'/dashboard',
+    element:<Dashboard/>
   }
 
 ])

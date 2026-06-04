@@ -1,7 +1,10 @@
 
 import * as tf from '@tensorflow/tfjs'
 
-export function normalizePoints(landmarks: Array<Record<string,number>>){
+type landmarkType = {x: number, y:number}[]
+
+
+export function normalizePoints(landmarks: landmarkType){
 
     const xScale = window.innerWidth - 5 - 200
     const yScale = 5 // find the relative coords of video 

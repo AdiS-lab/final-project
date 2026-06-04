@@ -1,5 +1,6 @@
-import {createUser, authUser, getUserInformation} from '../services/services.js'
+import {createUser, authUser, getUserInformation, insertCanvas, getCanvasData, updateCanvasData, uploadImageData, getImageData} from '../services/services.js'
 import {checkUser} from '../utils/checkUser.js'
+import bcrypt from 'bcrypt'
 
 
 //________________ Sign up Controller _______________________
@@ -56,6 +57,62 @@ export const getUserInfo = async(req,res)=>{
     }
     catch(error){
         return res.status(400).send(error.message)
+    }
+}
+
+export const createCanvas = async(req,res)=>{
+    console.log('made it to contoller')
+    const {nameOf} = req.body
+    if(!nameOf) return res.status(400).send('please enter a name')
+    try{
+        const response = await insertCanvas(nameOf)
+        res.status(200).send(response)
+    }
+    catch(error){
+        return res.status(500).send('could not be created')
+    }
+}
+
+export const getCanvas = async(req,res) =>{
+    try{
+        const response = await getCanvasData()
+        return res.status(200).json({msg: 'Successfully Retrieved Data', response})
+    }
+    catch(error){
+        return res.status(404).json({msg: 'no canvas information found'})
+    }
+}
+
+export const updateCanvas = async(req,res) =>{
+    const {publicUrl} = req.body
+    const {id} = req.params
+    if(!publicUrl) return res.status(400).json({msg: 'no imgUrl included'})
+    if(!id) return res.status(400).json({msg: 'youre url has a problem'})
+
+    try{
+        console.log(publicUrl)
+        await updateCanvasData(publicUrl, id)
+        return res.status(200).json({msg: 'successfully updated'})
+    }
+    catch(error){
+        throw error
+    }
+}
+
+export const uploadBlob = async(req,res) =>{
+    const file = req.file.buffer
+    const {id} = req.params
+    console.log('made it to uploadBlob')
+    if(!file) return res.status(400).json({msg: 'no blob found'})
+    try{  
+
+        uploadImageData(file, id)
+        const {publicUrl} = getImageData(id)
+        console.log(publicUrl)
+        return res.status(200).send(`${publicUrl}?t=${Date.now()}`)
+    }
+    catch(error){
+        return res.status(500).json({msg: 'failed to upload'})
     }
 }
 

@@ -49,7 +49,7 @@ export default function Login(){
             try{
                 const header = {headers:{Authorization: `Bearer ${accessToken}`}}
                 const response = await axios.get('http://localhost:3000/auth/me', header)
-                window.open('/canvas', '_self')
+                window.open('/dashboard', '_self')
                 console.log(response.data)
                 //push to dashboard 
                 }
@@ -73,7 +73,7 @@ export default function Login(){
             const data = response.data
             accessToken = data.accessToken
             
-            window.open('/canvas', '_self')              
+            window.open('/dashboard', '_self')              
         }
         catch(error: any){
             console.log(error.response.data)

@@ -1,11 +1,11 @@
 import {Link} from 'react-router-dom'
 
-type propTypes = {
+type buttonTypes = {
     onClick: any,
     name?: string
 }
 
-export function DashboardButton({onClick, name}: propTypes){
+export function DashboardButton({onClick, name}: buttonTypes){
     return (
         <button onClick = {onClick} className='flex items-center justify-center text-xs font-medium cursor-pointer'
         style={{
@@ -19,15 +19,19 @@ export function DashboardButton({onClick, name}: propTypes){
     )
 }
 
+type linkTypes = {
+    onSelect: any,
+    name?: string,
+    to: string
+}
 
-
-export function DashboardLink({onClick, name}: propTypes){
+export function DashboardLink({onSelect, name, to}: linkTypes){
 
     return (
  
         <Link
-            onClick={(e) => {onClick(e)}}
-            to='/canvas/gallery'
+            onClick={(e) => {onSelect(e)}}
+            to= {to}
             className='flex items-center justify-center text-xs font-medium cursor-pointer'
             style={{
                 width: '60px',

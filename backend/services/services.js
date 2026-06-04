@@ -53,6 +53,8 @@ export const authUser = async (userData) =>{
 }
 
 
+//_______________get user info upon token____________
+
 export const getUserInformation = async(id)=>{
     try{
         console.log(id)
@@ -70,3 +72,68 @@ export const getUserInformation = async(id)=>{
         throw error
     }
 }
+
+//____________ create user _________
+
+export const insertCanvas = async(name) =>{
+  
+    try{ 
+        const {data,error} = await supabase
+            .from("Canvas")
+            .insert({name: name})
+            .select()
+    
+        return data
+    }   
+    catch(error){
+        console.log(error)
+        throw error
+    }
+}
+
+export const getCanvasData = async() =>{
+    try{
+        const {data,error} = await supabase
+            .from("Canvas")
+            .select()
+        
+        return data
+    }
+    catch(error){
+        throw error
+    }
+}
+
+export const updateCanvasData = async(publicUrl, id) =>{
+    try{
+        const {data,error} = await supabase
+            .from("Canvas")
+            .update({img_url: publicUrl})
+            .eq('id', id)
+    }
+    catch(error){
+        throw error
+    }
+}
+export const uploadImageData = async(file, id) =>{
+    try{
+        const {error} = await supabase.storage
+            .from('previewStorage')
+            .upload(`${id}.png`, file, {upsert:true, contentType: 'image/png'}) 
+        console.log('made it to the end')
+        
+    }
+    catch(error){
+        console.log(error)
+        throw error
+    }
+}
+
+export const getImageData = (id) =>{
+    const {data} = supabase.storage
+        .from('previewStorage')
+        .getPublicUrl(`${id}.png`)
+    console.log(data)
+    return data
+}
+

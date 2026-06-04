@@ -43,7 +43,7 @@ export default function SignUp(){
                 sessionStorage.setItem('accessToken', data.accessToken)
                
                 console.log('heres navigate')
-                window.open('/canvas', '_self')              
+                window.open('/dashboard', '_self')              
             }
 
             catch(error){
