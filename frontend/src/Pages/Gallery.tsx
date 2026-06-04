@@ -1,10 +1,10 @@
 
 type imgArr = {
     imgArr:{imgUrl: string, imgId: string}[], 
-    handleClick: (id:string)=>void
+    handleClick?: (id:string)=>void
 }
 
-const Gallery = ({imgArr, handleClick}:imgArr)=>{
+const Gallery = ({imgArr}:imgArr)=>{
     console.log(imgArr)
 
     console.log(imgArr)

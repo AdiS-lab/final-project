@@ -33,13 +33,13 @@ function Dashboard(){
     },[])
 
 
-    function goToCanvas(){
-        console.log('made it')
+    // function goToCanvas(){
+    //     console.log('made it')
 
-        if(!dialogRef.current) return
-        setName("")
-        dialogRef.current.showModal()
-    }   
+    //     if(!dialogRef.current) return
+    //     setName("")
+    //     dialogRef.current.showModal()
+    // }   
 
     async function handleCreate(){
         if(!dialogRef.current) return
