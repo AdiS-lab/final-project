@@ -1,5 +1,5 @@
 import Gallery from './Gallery'
-import DashboardSidebar from '../Components/DashboardSidebar'
+import DashboardSidebar from '../Components/SidebarDashboard'
 import {useRef, useState, useEffect} from 'react'
 import axios from 'axios'
 

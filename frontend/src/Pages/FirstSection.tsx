@@ -1,5 +1,5 @@
 import {Link} from 'react-router-dom'
-import {Card} from '../Components/Cards'
+import {Card} from '../Components/CardsComponent'
 
 export function NavBar(){
 

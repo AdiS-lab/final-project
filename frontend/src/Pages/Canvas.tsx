@@ -7,7 +7,7 @@ import {normalizePoints} from '../HelperFunctions/helperFunctions'
 import { Stage, Layer, Image, Circle } from 'react-konva'
 import Konva from 'konva'
 import axios from 'axios'
-import Sidebar from '../Components/Sidebar'
+import Sidebar from '../Components/CanvasSidebar'
 
 function Canvas() {
   let classes = ["STOP", "CLOSE", "POINTER", "OK", "ERASE", "DRAW", "ZOOM IN", "ZOOM OUT"]

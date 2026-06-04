@@ -1,4 +1,4 @@
-import GalleryCards from '../Components/GalleryCards'
+import GalleryCards from '../Components/CardsGallery'
 
 type imgArr = {
     imgArr:{imgUrl: string, imgId: string}[], 
