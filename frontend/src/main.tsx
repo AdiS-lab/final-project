@@ -2,7 +2,7 @@ import { StrictMode } from 'react'
 import { createRoot } from 'react-dom/client'
 import {createBrowserRouter, RouterProvider} from 'react-router-dom'
 
-import Canvas  from './Pages/Canvas.tsx'
+// import Canvas  from './Pages/Canvas.tsx'
 import LandingPage from './Pages/LandingPage.tsx'
 import SignUp from './Pages/SignUp.tsx'
 import Login from './Pages/LogIn.tsx'
@@ -21,7 +21,7 @@ const router = createBrowserRouter([
   },
   {
   path: '/canvas/:id',
-  element: <Canvas />,
+  element: <Dashboard />,
   },
   {
     path: '/signup',
