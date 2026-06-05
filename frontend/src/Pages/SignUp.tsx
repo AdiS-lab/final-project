@@ -1,8 +1,13 @@
-import {Link} from 'react-router-dom'
+import {Link, useNavigate} from 'react-router-dom'
+import {useUserSession} from '../FrontendAuth/globalState'
+import {useState} from 'react'
 import axios from 'axios'
 
 export default function SignUp(){
-
+    const {setUserSession} = useUserSession((state)=>state)
+    const [validEmail, setValidEmail] = useState<Boolean>(false)
+    const [loading, setLoading] = useState<Boolean>(false)
+    const navigate = useNavigate()
 
     function realTimeInput(e: any){
         const value = e.target.value
@@ -19,18 +24,23 @@ export default function SignUp(){
 
         if (hasValidAt && hasValidDot && hasAfterDot) {
             e.target.style.borderColor = 'green'
+            setValidEmail(true)
         } else {
             e.target.style.borderColor = 'red'
+            
         }
     }
     
 
     async function createUser(e: any){
         e.preventDefault()
-        const formData = new FormData(e.currentTarget)
-        const formValues = Object.fromEntries(formData)
-        console.log(formValues)
-        createNewUser(formValues)
+        if(validEmail){
+            setLoading(true)
+            const formData = new FormData(e.currentTarget)
+            const formValues = Object.fromEntries(formData)
+            console.log(formValues)
+            createNewUser(formValues)
+        }
     }
 
 
@@ -39,10 +49,10 @@ export default function SignUp(){
                 console.log(formValues)
                 const response = await axios.post('http://localhost:3000/signup', formValues, {withCredentials:true})
                 const data = response.data
-                sessionStorage.setItem('accessToken', data.accessToken)
-               
+                
+                setUserSession({accessToken: data.accessToken})
                 console.log('heres navigate')
-                window.open('/dashboard', '_self')              
+                navigate('/dashboard')       
             }
 
             catch(error){
@@ -51,49 +61,35 @@ export default function SignUp(){
         }
 
     return(
-        <div className='min-h-screen w-full flex items-center justify-center' style={{ background: '#0a0a0a' }}>
+        <div className='min-h-screen w-full flex items-center justify-center bg-[#0a0a0a]'>
 
-            <div className='flex flex-col gap-6 p-10 w-full max-w-md' style={{
-                background: '#111111',
-                border: '1px solid #1f1f1f',
-                borderRadius: '8px',
-            }}>
+            <div className='flex flex-col gap-6 p-10 w-full max-w-md bg-[#111111] border border-[#1f1f1f] rounded-lg'>
                 <header className='flex flex-col gap-1'>
-                    <h1 className='text-xl font-semibold' style={{ color: '#d0d0d0' }}>Create Account</h1>
-                    <h2 className='text-sm' style={{ color: '#555555' }}>Start drawing with your hands</h2>
+                    <h1 className='text-xl font-semibold text-[#d0d0d0]'>Create Account</h1>
+                    <h2 className='text-sm text-[#555555]'>Start drawing with your hands</h2>
                 </header>
 
                 <form onSubmit={(e) => { createUser(e) }} className='flex flex-col gap-4'>
                     <div className='flex flex-col gap-1.5'>
-                        <label htmlFor='email' className='text-xs font-medium' style={{ color: '#888888' }}>Email</label>
-                        <input onChange={(e) => { realTimeInput(e) }} autoComplete='off' type='text' name='email' id='email' placeholder='you@example.com' className='w-full px-4 py-2.5 outline-none text-sm' style={{
-                            background: '#0a0a0a',
-                            border: '1px solid #2a2a2a',
-                            borderRadius: '5px',
-                            color: '#d0d0d0',
-                        }} />
+                        <label htmlFor='email' className='text-xs font-medium text-[#888888]'>Email</label>
+                        <input onChange={(e) => { realTimeInput(e) }} autoComplete='off' type='text' name='email' id='email' placeholder='you@example.com' className='w-full px-4 py-2.5 outline-none text-sm bg-[#0a0a0a] border border-[#2a2a2a] rounded-[5px] text-[#d0d0d0]' />
                     </div>
                     <div className='flex flex-col gap-1.5'>
-                        <label htmlFor='password' className='text-xs font-medium' style={{ color: '#888888' }}>Password</label>
-                        <input type='password' name='password' id='password' placeholder='••••••••' className='w-full px-4 py-2.5 outline-none text-sm' style={{
-                            background: '#0a0a0a',
-                            border: '1px solid #2a2a2a',
-                            borderRadius: '5px',
-                            color: '#d0d0d0',
-                        }} />
+                        <label htmlFor='password' className='text-xs font-medium text-[#888888]'>Password</label>
+                        <input type='password' name='password' id='password' placeholder='••••••••' className='w-full px-4 py-2.5 outline-none text-sm bg-[#0a0a0a] border border-[#2a2a2a] rounded-[5px] text-[#d0d0d0]' />
                     </div>
-                    <button className='w-full py-2.5 font-medium cursor-pointer mt-1 text-sm' style={{
-                        background: '#d0d0d0',
-                        color: '#0a0a0a',
-                        border: 'none',
-                        borderRadius: '5px',
-                    }}>
-                        Sign Up
-                    </button>
+                    {(loading && validEmail) 
+                        ? <div className='w-full py-2.5 mt-1 bg-[#d0d0d0] rounded-[5px] flex items-center justify-center'>
+                            <div className='w-4 h-4 border-2 border-[#0a0a0a] border-t-transparent rounded-full animate-spin'></div>
+                          </div>
+                        : <button className='w-full py-2.5 font-medium cursor-pointer mt-1 text-sm bg-[#d0d0d0] text-[#0a0a0a] border-none rounded-[5px]'>
+                            Sign Up
+                          </button>
+                    }
                 </form>
 
-                <div className='text-center text-sm' style={{ color: '#555555' }}>
-                    <p>Already have an account? <Link to='/login' className='font-medium' style={{ color: '#d0d0d0' }}>Log In</Link></p>
+                <div className='text-center text-sm text-[#555555]'>
+                    <p>Already have an account? <Link to='/login' className='font-medium text-[#d0d0d0]'>Log In</Link></p>
                 </div>
             </div>
 

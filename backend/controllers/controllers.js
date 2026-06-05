@@ -61,11 +61,14 @@ export const getUserInfo = async(req,res)=>{
 }
 
 export const createCanvas = async(req,res)=>{
+    
     console.log('made it to contoller')
     const {nameOf} = req.body
+    const userId = req.user
+    if(!userId) return res.status(400).send('something is wrong with access token')
     if(!nameOf) return res.status(400).send('please enter a name')
     try{
-        const response = await insertCanvas(nameOf)
+        const response = await insertCanvas(nameOf, userId)
         res.status(200).send(response)
     }
     catch(error){
@@ -75,7 +78,10 @@ export const createCanvas = async(req,res)=>{
 
 export const getCanvas = async(req,res) =>{
     try{
-        const response = await getCanvasData()
+        const userId = req.user
+        console.log('getCanvas controller: ' + userId)
+        const response = await getCanvasData(userId)
+        console.log(response)
         return res.status(200).json({msg: 'Successfully Retrieved Data', response})
     }
     catch(error){

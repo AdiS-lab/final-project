@@ -1,9 +1,16 @@
 import Gallery from './Gallery'
 import {useRef, useState, useEffect} from 'react'
 import axios from 'axios'
-import SidebarDashboard from '../Components/SidebarDashboard.tsx'
+import SidebarDashboard from '../Components/SidebarDashboard'
+import {useUserSession} from  '../FrontendAuth/globalState'
+import {useNavigate} from 'react-router-dom'
 
 function Dashboard(){
+    const {userSession} = useUserSession((state) =>state)
+    const accessToken = userSession.accessToken
+    const header = {headers:{Authorization: `Bearer ${accessToken}`}}
+    const navigate = useNavigate()
+
     const [name, setName] = useState("")
     let [imgArr, setImgArr] = useState([])
 
@@ -15,12 +22,17 @@ function Dashboard(){
                 type canvasData = {
                     img_url: string
                     id: string
+                    name: string
                 }
-                const canvasParts = await axios.get('http://localhost:3000/canvasData',{withCredentials: true})
+
+                console.log("Dashboard access token: " +  accessToken)
+                const canvasParts = await axios.get('http://localhost:3000/canvasData', header)
                 const data = canvasParts.data.response
+                console.log("canvas data look for name " +  data[0].name)
                 const newArr = data.map((canvasData: canvasData)=>{
                     return {imgUrl: canvasData.img_url, 
-                        imgId: canvasData.id}
+                        imgId: canvasData.id,
+                        imgName: canvasData.name}
                 })
 
                 setImgArr(newArr)
@@ -44,17 +56,15 @@ function Dashboard(){
 
     async function handleCreate(){
         if(!dialogRef.current) return
-        console.log(name)
-
         try{
-            const response = await axios.post('http://localhost:3000/createCanvas', {nameOf: name})
+            const response = await axios.post('http://localhost:3000/createCanvas', {nameOf: name}, header)
             const data = response.data
             const id = data[0].id
             console.log(id)
             if(!id) return 
             console.log(response.data)
             dialogRef.current.close() // need to pass name prop onto canvas + props into cards
-            window.open(`./canvas/${id}`, '_self')
+            navigate(`/canvas/${id}`)
 
         }
         catch(error){
@@ -70,8 +80,7 @@ function Dashboard(){
     }
 
     function handleClick(id: string){
-        window.open(`/canvas/${id}`, '_self')
-        console.log(id)
+        navigate(`/canvas/${id}`)
     }   
 
 

@@ -27,8 +27,9 @@ export const validateRefreshToken = async(req,res,next)=>{
         console.log(req.cookies)
         const token = req.cookies.refreshToken // however you would get the refreshToken
         const payload = jwt.verify(token, process.env.SECRET_REFRESH_KEY)
-        const id = payload.userId
-        const accessToken = jwt.sign({id}, process.env.SECRET_ACCESS_KEY, {expiresIn: '15min'})
+        const userId = payload.userId
+        const accessToken = jwt.sign({userId}, process.env.SECRET_ACCESS_KEY, {expiresIn: '15min'})
+        console.log("access token created by refresh" + accessToken)
         return res.status(200).send(accessToken)
     }
     catch(error){

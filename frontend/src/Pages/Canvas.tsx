@@ -334,7 +334,7 @@ function Canvas() {
 
         await axios.put(`http://localhost:3000/canvas/${id}`, {publicUrl}, {withCredentials:true})
         console.log(publicUrl)
-        navigate('/dashboard')
+        navigate('/dashboard', {replace:true})
     }
     catch(error){console.log(error)}
   }

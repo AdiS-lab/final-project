@@ -16,7 +16,7 @@ export function NavBar(){
             </h1>
 
             <div className='flex items-center gap-6'>
-                <Link to='/login' className='text-sm font-normal' style={{
+                <Link to='/dashboard' className='text-sm font-normal' style={{
                     color: '#555555',
                 }}>
                     Log in

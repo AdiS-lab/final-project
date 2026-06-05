@@ -2,6 +2,8 @@ import { StrictMode } from 'react'
 import { createRoot } from 'react-dom/client'
 import {createBrowserRouter, RouterProvider} from 'react-router-dom'
 
+
+import ProtectedRoutes from './FrontendAuth/ProtectedRoutes'
 import Canvas from './Pages/Canvas'
 import LandingPage from './Pages/LandingPage'
 import SignUp from './Pages/SignUp'
@@ -12,16 +14,26 @@ import './index.css'
 import axios from "axios"
 
 axios.defaults.withCredentials = true
+// axios.defaults.baseURL = import.meta.env.VITE_API_URL
 
 const router = createBrowserRouter([
+  {
+    element: <ProtectedRoutes />,
+    children: [
+      {
+        path:'/dashboard',
+        element:<Dashboard/>
+      },
+      {
+        path: '/canvas/:id',
+        element: <Canvas />
+      }
+    ]
+  },
   {
     path: '/',
     element:<LandingPage />,
     errorElement:<ErrorHandle />
-  },
-  {
-  path: '/canvas/:id',
-  element: <Canvas />,
   },
   {
     path: '/signup',
@@ -31,10 +43,6 @@ const router = createBrowserRouter([
     path: '/login',
     element: <Login />
   },
-  {
-    path:'/dashboard',
-    element:<Dashboard/>
-  }
 
 ])
 

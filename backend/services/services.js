@@ -75,12 +75,12 @@ export const getUserInformation = async(id)=>{
 
 //____________ create user _________
 
-export const insertCanvas = async(name) =>{
+export const insertCanvas = async(name, userId) =>{
   
     try{ 
         const {data,error} = await supabase
             .from("Canvas")
-            .insert({name: name})
+            .insert({name: name, user_reference: userId})
             .select()
     
         return data
@@ -91,11 +91,12 @@ export const insertCanvas = async(name) =>{
     }
 }
 
-export const getCanvasData = async() =>{
+export const getCanvasData = async(userId) =>{
     try{
         const {data,error} = await supabase
             .from("Canvas")
             .select()
+            .eq("user_reference", userId)
         
         return data
     }

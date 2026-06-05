@@ -1,7 +1,19 @@
-// import { create } from "zustand";
+import { create } from "zustand";
 
-// export const useUserSession = create((set) => ({
-//   userSession: null,
-//   setUserSession: (data) =>
-//     set(() => {userSession: data}),
-// }));
+
+type UserSession = {
+    accessToken: string | null
+  }
+
+type UserSessionStore = {
+    userSession: UserSession,
+    setUserSession: (data: UserSession) => void
+}
+
+export const useUserSession = create<UserSessionStore>((set) => ({
+  userSession: {
+    accessToken: null
+  },
+  setUserSession: (data: UserSession) =>
+    set(() => ({userSession: data})),
+}));
