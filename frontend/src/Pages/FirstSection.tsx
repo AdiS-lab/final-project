@@ -1,4 +1,5 @@
 import {Link} from 'react-router-dom'
+import {Card} from '../Components/CardsComponent.tsx'
 
 export function NavBar(){
 
@@ -77,8 +78,8 @@ export function Section2(){
         <div className='w-full py-20 px-10 flex justify-center gap-8' style={{
             background: '#0a0a0a',
         }}>
-            {/* <Card/>
-            <Card/> */}
+            <Card/>
+            <Card/>
         </div>
     )
 }

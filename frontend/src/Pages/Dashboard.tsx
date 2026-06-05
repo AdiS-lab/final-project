@@ -1,6 +1,7 @@
 import Gallery from './Gallery'
 import {useRef, useState, useEffect} from 'react'
 import axios from 'axios'
+import SidebarDashboard from '../Components/SidebarDashboard.tsx'
 
 function Dashboard(){
     const [name, setName] = useState("")
@@ -33,13 +34,13 @@ function Dashboard(){
     },[])
 
 
-    // function goToCanvas(){
-    //     console.log('made it')
+    function goToCanvas(){
+        console.log('made it')
 
-    //     if(!dialogRef.current) return
-    //     setName("")
-    //     dialogRef.current.showModal()
-    // }   
+        if(!dialogRef.current) return
+        setName("")
+        dialogRef.current.showModal()
+    }   
 
     async function handleCreate(){
         if(!dialogRef.current) return
@@ -78,7 +79,7 @@ function Dashboard(){
     return(
         <>
             <div className= 'flex flex-row w-full h-screen overflow-hidden'>
-                {/* <DashboardSidebar onClick = {goToCanvas}/> */}
+                <SidebarDashboard onClick = {goToCanvas}/>
                 <Gallery imgArr = {imgArr}  handleClick = {handleClick}/>
             </div>
             <dialog ref={dialogRef} className='w-[360px] rounded-xl border border-[#2a2a2a]' style={{ background: 'rgba(22, 22, 22, 0.92)', color: '#d0d0d0' }}>

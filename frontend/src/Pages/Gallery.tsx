@@ -1,10 +1,12 @@
 
+import CardsGallery from '../Components/CardsGallery'
+
 type imgArr = {
     imgArr:{imgUrl: string, imgId: string}[], 
-    handleClick?: (id:string)=>void
+    handleClick: (id:string)=>void
 }
 
-const Gallery = ({imgArr}:imgArr)=>{
+const Gallery = ({imgArr, handleClick}:imgArr)=>{
     console.log(imgArr)
 
     console.log(imgArr)
@@ -14,10 +16,10 @@ const Gallery = ({imgArr}:imgArr)=>{
                 <h1 className='text-xl font-semibold' style={{ color: '#d0d0d0', letterSpacing: '0.02em' }}>Dashboard</h1>
             </div>
             <div className='p-8 w-full flex gap-6 flex-wrap'>
-                {/* {imgArr.map((img: {imgUrl: string, imgId: string}, index: number)=>(
-                    img.imgUrl && <GalleryCards key = {'card' + index} previewImage={img.imgUrl} name={'yeay'} onClick = {()=>handleClick(img.imgId)}/>
+                {imgArr.map((img: {imgUrl: string, imgId: string}, index: number)=>(
+                    img.imgUrl && <CardsGallery key = {'card' + index} previewImage={img.imgUrl} name={'yeay'} onClick = {()=>handleClick(img.imgId)}/>
                 ))
-                } */}
+                }
             </div>
         </div>
         
