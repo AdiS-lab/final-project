@@ -16,7 +16,7 @@ export default function SignUp(){
         await supabase.auth.signInWithOAuth({
             provider: 'google',
             options: {
-                redirectTo: 'http://localhost:5173/dashboard',
+                redirectTo: 'https://frontendhanddraw.vercel.app/dashboard',
                 queryParams: {
                     access_type: 'offline',
                     prompt: 'consent',
@@ -64,7 +64,7 @@ export default function SignUp(){
     async function createNewUser(formValues: object){
             try{
                 console.log(formValues)
-                const response = await axios.post('http://localhost:3000/signup', formValues, {withCredentials:true})
+                const response = await axios.post('/signup', formValues, {withCredentials:true})
                 const data = response.data
                 console.log(data.accessToken)
                 await supabase.auth.setSession({

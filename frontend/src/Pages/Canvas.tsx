@@ -73,7 +73,7 @@ function Canvas() {
 //   useEffect(()=>{
 //     async function getName(){
 //       try{
-//         const canvasData = await axios.get('http://localhost:3000/canvasData')
+//         const canvasData = await axios.get('/canvasData')
 //       }
 //       catch(error){console.log(error)}
 //     }
@@ -324,10 +324,10 @@ function Canvas() {
 
         const header = {headers: {Authorization: `Bearer ${accessToken}`}}
 
-        const blobResponse = await axios.post(`http://localhost:3000/uploadBlob/${id}`, formData, header)
+        const blobResponse = await axios.post(`/uploadBlob/${id}`, formData, header)
         const publicUrl = blobResponse.data
 
-        await axios.put(`http://localhost:3000/canvas/${id}`, {publicUrl}, {withCredentials:true})
+        await axios.put(`/canvas/${id}`, {publicUrl}, {withCredentials:true})
         console.log(publicUrl)
 
         

@@ -30,7 +30,7 @@ function Dashboard(){
                 }
 
                 console.log("Dashboard access token: " +  accessToken)
-                const canvasParts = await axios.get('http://localhost:3000/canvasData', header)
+                const canvasParts = await axios.get('/canvasData', header)
                 const data = canvasParts.data.response
                 console.log("canvas data look for name " +  data[0].name)
                 const newArr = data.map((canvasData: canvasData)=>{
@@ -63,7 +63,7 @@ function Dashboard(){
         if(!dialogRef.current) return
         try{
             console.log(name)
-            const response = await axios.post('http://localhost:3000/createCanvas', {nameOf: name}, header)
+            const response = await axios.post('/createCanvas', {nameOf: name}, header)
             const data = response.data
             const id = data[0].id
             console.log(id)
@@ -91,13 +91,13 @@ function Dashboard(){
     
     async function deleteSession(id: string){
         console.log('made it to delete')
-        const response = await axios.delete(`http://localhost:3000/deleteCanvas/${id}`, header)
+        const response = await axios.delete(`/deleteCanvas/${id}`, header)
         console.log(response)
         window.open('/dashboard','_self')
     }
 
     function signOut(){
-        axios.delete(`http://localhost:3000/deleteUser`, header)
+        axios.delete(`/deleteUser`, header)
         window.open('/dashboard', '_self')
     }
 

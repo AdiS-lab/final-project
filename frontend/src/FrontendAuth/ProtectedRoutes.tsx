@@ -40,7 +40,7 @@ function ProtectedRoutes(){
     async function validateToken(token: string | undefined){
         try{
             const header = {headers:{Authorization: `Bearer ${token}`}}
-            const response = await axios.get('http://localhost:3000/auth/me', header)
+            const response = await axios.get('/auth/me', header)
             console.log(response)
             setHasAccess(true)
             return
