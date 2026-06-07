@@ -9,7 +9,7 @@ const app = express()
 app.use(express.json())
 app.use(express.json({limit: '25mb'}))
 app.use(cors({
-    origin: 'https://frontendhanddraw.vercel.app/',
+    origin: 'https://frontendhanddraw.vercel.app',
     credentials:true})) // have to specify origin for creating cookies
 
 app.use(cookieParser()) // to read cookies have to be able to parse
@@ -17,5 +17,5 @@ app.use(cookieParser()) // to read cookies have to be able to parse
 
 
 app.use(router)
-app.listen(3000)
+app.listen(process.env.PORT || 3000)
 
