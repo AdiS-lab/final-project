@@ -61,7 +61,7 @@ function ProtectedRoutes(){
         }
         
         const {data} = supabase.auth.onAuthStateChange(async (event, session)=>{
-            console.log('made it here')
+            console.log(event)
             if(session?.access_token){
                 setUserSession({accessToken: session.access_token})
                 validateToken(session.access_token)
