@@ -8,10 +8,14 @@ import { Stage, Layer, Image, Circle } from 'react-konva'
 import Konva from 'konva'
 import axios from 'axios'
 import Sidebar from '../Components/CanvasSidebar.tsx'
+import {useUserSession} from '../FrontendAuth/globalState'
 
 function Canvas() {
   let classes = ["STOP", "CLOSE", "POINTER", "OK", "ERASE", "DRAW", "ZOOM IN", "ZOOM OUT"]
   const [webcamSelected, setWebcamSelected] = useState<Boolean>(false)
+  const {userSession} = useUserSession((state)=>state)
+  let accessToken =  userSession.accessToken
+
   let [w, setW] = useState<number>(1)
   let [h, setH] = useState<number>(1)
   
@@ -35,16 +39,10 @@ function Canvas() {
   const id = params.id
   
 
-
-  var gridDots = [];
-  var spacing = 40;
-  var range = 2000;
-  for (var gx = -range; gx <= range; gx += spacing) {
-    for (var gy = -range; gy <= range; gy += spacing) {
-      gridDots.push({ x: gx, y: gy });
-    }
-  }
   const imageRef = useRef<Konva.Image>(null)
+  const overlayRef = useRef<Konva.Layer>(null)
+  const modesRef = useRef<HTMLDivElement>(null)
+
 
   //________________________________ this is used to intialize the offscreen canvas drawing on when first loading _______________________
    useEffect(()=>{
@@ -72,6 +70,14 @@ function Canvas() {
  
   },[])
 
+//   useEffect(()=>{
+//     async function getName(){
+//       try{
+//         const canvasData = await axios.get('http://localhost:3000/canvasData')
+//       }
+//       catch(error){console.log(error)}
+//     }
+// }, [])
 
 
   console.log(canvasOffScreen)
@@ -144,39 +150,45 @@ function Canvas() {
     if(!canvasOffScreen.current) return
     const context = canvasOffScreen.current.getContext("2d")!
     const image = imageRef.current
+
+    const overlayTrack = overlayRef.current
+    overlayTrack?.destroyChildren()
     
     ctxForVideo.clearRect(0,0,canvasForVideo.width, canvasForVideo.height)
     
     const landmarks = result.landmarks[0]
     const landmarksRight = result.landmarks[1]
+
+    let xTrue = 0
+    let yTrue = 0
+
+    let zoom: boolean = false
     
 
     const stage = stageRef.current
     if(!stage) return
 
     const oldScale = stage.scaleX()
-    // console.log({
-    //   stagex: stage.x(),
-    //   stagey: stage.y(),
-    //   stageLength: stage.width()
-
-    // })
 
     const displayArr = []
-
-    // ctx.clearRect(0,0,canvas.width,canvas.height)
-
     //________________________________ THIS IS USED TO DRAW ON VIDEO + DISPLAY GESTURE_______________________________________________
 
     for(const handLandmark of result.landmarks){
       overlay.drawLandmarks(handLandmark, {color:'white', radius: 2} )
       overlay.drawConnectors(handLandmark, GestureRecognizer.HAND_CONNECTIONS, {color:'green'})
       console.log(oldScale)
-      // context.beginPath()
-      // //flip the coordinate
-      // context.ellipse((((handLandmark[8].x*-1+1)*window.innerWidth) - stage.x()) / oldScale, ((handLandmark[8].y*window.innerHeight) -stage.y()) / oldScale, 5 / oldScale, 5 / oldScale, 2 * Math.PI , 0, 2*Math.PI)
-      // console.log({scale: 2/oldScale})
-      // context.stroke()
+      xTrue = (((handLandmark[8].x*-1+1)*window.innerWidth) - stage.x()) / oldScale
+      yTrue =  ((handLandmark[8].y*window.innerHeight) -stage.y()) / oldScale
+
+      overlayTrack?.add(new Konva.Circle({
+          x: xTrue,
+          y: yTrue,
+          radius: 5,
+          fill: 'green',
+      }))
+
+      console.log(overlayTrack)
+      overlayTrack?.batchDraw()
 
       image?.getLayer()?.batchDraw();
 
@@ -187,52 +199,57 @@ function Canvas() {
     }
 
     const SCALE = 100
-    if(MODE == 'DRAW' && (landmarks || landmarksRight)){
+    if(MODE == 'draw' && (landmarks || landmarksRight)){
+
         context.globalCompositeOperation = 'source-over'
-        let x1 = (((landmarks[8].x*-1+1)*window.innerWidth) - stage.x()) / oldScale
-        let y1 = ((landmarks[8].y*window.innerHeight) -stage.y()) / oldScale
+        context.lineWidth = 5
+        let x1 = xTrue
+        let y1 = yTrue
         draw(x1,y1,context)
     }
-    if(MODE == 'STOP' && (landmarks || landmarksRight)){
-        // context.lineWidth = 20
+    if(MODE === 'stop' && (landmarks || landmarksRight)){
+        context.lineWidth = 5
         context.globalCompositeOperation = 'source-over'
     }
-    if(MODE == 'ERASE' && (landmarks || landmarksRight)){
+    if(MODE === 'erase' && (landmarks || landmarksRight)){
         context.globalCompositeOperation = 'destination-out'
-        let x1 = ((landmarks[8].x*-1)+1)*canvasOffScreen.current.clientWidth
-        let y1 = landmarks[8].y*canvasOffScreen.current.clientHeight
+        context.lineWidth = 50
+        let x1 = xTrue
+        let y1 = yTrue
         draw(x1,y1,context)
     }
-    if(MODE == 'ZOOM OUT' && (landmarks || landmarksRight)){
+    if(MODE === 'zoom out' && (landmarks || landmarksRight)){
+      context.lineWidth = 5
       const distance = Math.sqrt((landmarks[8].x - landmarks[4].x)**2 + (landmarks[8].y - landmarks[4].y)**2)
-      controlZoomOut(distance*SCALE)
+      zoom = false
+      controlZoom(distance*SCALE, zoom)
     }
-     if(MODE == 'ZOOM IN' && (landmarks || landmarksRight)){
+    
+     if(MODE === 'zoom in' && (landmarks || landmarksRight)){
+      context.lineWidth = 5
       const distance = Math.sqrt((landmarks[8].x - landmarks[4].x)**2 + (landmarks[8].y - landmarks[4].y)**2)
-      controlZoomIn(distance*SCALE)
+      zoom = true
+      controlZoom(distance*SCALE, zoom)
     }
 
     //________________________GESTURE RECOGNITION______________________
 
  
 
-    if(displayArr[0] === 'DRAW' && displayArr[1] === 'DRAW' ){
-        MODE = 'DRAW'
-    }
-    if(displayArr[0] === 'STOP' && displayArr[1] === 'STOP'){
-        MODE = 'STOP'
-    }
-    if(displayArr[0] === 'ERASE' && displayArr[1] === 'ERASE'){
-        MODE = 'ERASE'
-    }
-    if(displayArr[0] === 'ZOOM OUT' && displayArr[1] === 'ZOOM OUT'){
-      MODE = 'ZOOM OUT'
-    }
-    if(displayArr[0] === 'ZOOM IN' && displayArr[1] === 'ZOOM IN'){
-      MODE = 'ZOOM IN'
+    if(displayArr[0] === 'DRAW' && displayArr[1] === 'DRAW') MODE = 'draw'
+    if(displayArr[0] === 'STOP' && displayArr[1] === 'STOP') MODE = 'stop'
+    if(displayArr[0] === 'ERASE' && displayArr[1] === 'ERASE') MODE = 'erase'
+    if(displayArr[0] === 'ZOOM OUT' && displayArr[1] === 'ZOOM OUT') MODE = 'zoom out'
+    if(displayArr[0] === 'ZOOM IN' && displayArr[1] === 'ZOOM IN') MODE = 'zoom in'
+
+    if(modesRef.current){
+      Array.from(modesRef.current.children).forEach((child: any) => {
+        const active = child.dataset.mode === MODE
+        child.style.color = active ? '#d0d0d0' : '#555555'
+        child.style.background = active ? '#2a2a2a' : '#858585'
+      })
     }
       
-    
 
 
     console.log(displayArr)
@@ -266,18 +283,19 @@ function Canvas() {
   }
   
   let distanceArr: Array<number> = []
-  function controlZoomOut(distance: number){
+  function controlZoom(distance: number, zoom: boolean){
 
       const scaleBy = 1.05
       const oldScale = scale.current
       const stage = stageRef.current
-      const THRESHOLD = -0.8
       if(!stage) return
+      const THRESHOLD = !zoom ?  -0.8 : 1
 
       distanceArr.push(distance)
       if(distanceArr.length>1){
-        if((distanceArr[1] - distanceArr[0]) < THRESHOLD){
-          let newScale = oldScale / scaleBy
+        const DISTBOOL = !zoom ? (distanceArr[1] - distanceArr[0]) < THRESHOLD : (distanceArr[1] - distanceArr[0]) > THRESHOLD
+        if(DISTBOOL){
+          let newScale = !zoom ? oldScale / scaleBy : oldScale * scaleBy
           let scaleClamped = Math.max(0.3, Math.min(3, newScale))
           if (scaleClamped === oldScale) return
           scale.current = scaleClamped
@@ -289,31 +307,6 @@ function Canvas() {
 
       }
   }
-  let distanceArr2: Array<number> = []
-   function controlZoomIn(distance: number){
-    
-      const scaleBy = 1.05
-      const oldScale = scale.current
-      const stage = stageRef.current
-      if(!stage) return
-      const THRESHOLD = 1
-
-      distanceArr2.push(distance)
-      if(distanceArr2.length>1){
-        if((distanceArr2[1] - distanceArr2[0]) > THRESHOLD){
-          let newScale = oldScale * scaleBy
-          let scaleClamped = Math.max(0.3, Math.min(3, newScale))
-          if (scaleClamped === oldScale) return
-          scale.current = scaleClamped
-          stage.scale({x: scaleClamped, y: scaleClamped})
-          
-        }
-
-        distanceArr2.shift()
-
-      }
-  }
-
 
   async function switchOutCanvas(e: any){
     if(webcamSelected){
@@ -329,11 +322,15 @@ function Canvas() {
         formData.append('image', blob)
         console.log('making it past')
 
-        const blobResponse = await axios.post(`http://localhost:3000/uploadBlob/${id}`, formData, {withCredentials: true})
+        const header = {headers: {Authorization: `Bearer ${accessToken}`}}
+
+        const blobResponse = await axios.post(`http://localhost:3000/uploadBlob/${id}`, formData, header)
         const publicUrl = blobResponse.data
 
         await axios.put(`http://localhost:3000/canvas/${id}`, {publicUrl}, {withCredentials:true})
         console.log(publicUrl)
+
+        
         navigate('/dashboard', {replace:true})
     }
     catch(error){console.log(error)}
@@ -372,6 +369,9 @@ function Canvas() {
     imageRef.current?.getLayer()?.batchDraw()
   }
 
+
+  
+//_______________ ORIGINAL WAY TO ACTUALLY CHANGE CANVAS 
   function onWheel(e: any){
     const scaleBy = 1.03
     e.evt.preventDefault();
@@ -416,12 +416,6 @@ function Canvas() {
   } 
 
 //_____________________________ place holder button to remove _____________________________________
-  function endSession(){
-    if(!stageRef.current) return
-    const imgUrl = stageRef.current.toDataURL()
-    console.log(b64toBlob(imgUrl))
-    console.log({id, imgUrl})
-  }
 
   function b64toBlob(url: string){
     const [data, base64] = url.split(',')
@@ -450,22 +444,25 @@ function Canvas() {
   //______________________________ basic layout ________________________________________________
   return (
     <div className='flex flex-row w-full h-screen overflow-hidden' style={{ background: '#0a0a0a', fontFamily: 'Inter, system-ui, sans-serif' }}>
-      {/* grid grid-cols-[100px_2fr_1fr] */}
-      <Sidebar endSession = {endSession} onStart = {startWebcam} onStop = {stopWebcam} clearAll = {clearAll} switchCanvas = {switchOutCanvas} webcamActive = {webcamSelected}/>
+      <Sidebar onStart = {startWebcam} onStop = {stopWebcam} clearAll = {clearAll} switchCanvas = {switchOutCanvas} webcamActive = {webcamSelected}/>
         <div className = 'grid grid-cols-[1fr_200px] w-full'>
-          <div ref = {container} className = 'h-full bg-white relative overflow-hidden' >
-            {w>1 && <Stage width = {w} height = {h} ref = {stageRef} onWheel = {(e)=>{onWheel(e)}}> 
+          <div ref = {container} className = 'h-full relative overflow-hidden' style={{ background: '#f5f5f0' }}>
+            <div ref={modesRef} className='absolute top-3 left-1/2 -translate-x-1/2 z-10 flex gap-2'>
+              {['draw', 'erase', 'stop', 'zoom in', 'zoom out'].map(m => (
+                <p key={m} data-mode={m} className='text-xs font-medium px-3 py-1 rounded-full' style={{ background:'#858585', color: '#555555', letterSpacing: '0.08em' }}>{m}</p>
+              ))}
+            </div>
+            {w>1 && <Stage width = {w} height = {h} ref = {stageRef} onWheel = {(e)=>{onWheel(e)}}>
                 <Layer>
-                    {/* {gridDots.map(function(d, i) {
-                        return <Circle key={'g'+i} x={d.x} y={d.y} radius={1} fill="#000000" listening={false} />;
-                      })} */}
                       <Image image = {canvasOffScreen.current} x = {0} y = {0} ref = {imageRef}/>
                       <Circle x={200} y={200} radius = {20} fill='white' draggable shadowColor="rgba(0,0,0,0.15)" shadowBlur={10} shadowOffsetY={4} />
+                </Layer>
+                <Layer ref = {overlayRef}>
 
                 </Layer>
             </Stage>}
           </div>
-          <div style={{ background: 'white', borderLeft: '1px solid #1a1a1a', position: 'relative' }}>
+          <div className='relative border-l border-[#1a1a1a]' style={{ background: '#111111' }}>
             <video className='absolute right-0 top-0 w-full scale-x-[-1]' ref={videoRef} autoPlay />
             <canvas className ='w-50 h-50 absolute right-0 top-0 z-10 scale-x-[-1]' ref = {visualRef}></canvas>
           </div>

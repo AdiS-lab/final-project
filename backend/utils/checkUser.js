@@ -2,10 +2,19 @@
 import {supabase} from './supabase.js'
 
 export async function checkUser(email){
+    try{
     console.log(email)
     const {data, error} = await supabase
-        .from('ComputerVision')
+        .from("ComputerVision")
         .select()
-        .eq('email',email)
+        .eq("email", email)
+
+    console.log(data)
     return data
+    
+    }
+    catch(error){
+        console.log(error)
+        throw error
+    }
 }

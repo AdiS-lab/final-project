@@ -2,7 +2,7 @@ import { create } from "zustand";
 
 
 type UserSession = {
-    accessToken: string | null
+    accessToken: string | undefined
   }
 
 type UserSessionStore = {
@@ -12,7 +12,7 @@ type UserSessionStore = {
 
 export const useUserSession = create<UserSessionStore>((set) => ({
   userSession: {
-    accessToken: null
+    accessToken: undefined
   },
   setUserSession: (data: UserSession) =>
     set(() => ({userSession: data})),

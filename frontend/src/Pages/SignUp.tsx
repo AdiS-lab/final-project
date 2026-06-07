@@ -1,6 +1,7 @@
 import {Link, useNavigate} from 'react-router-dom'
 import {useUserSession} from '../FrontendAuth/globalState'
 import {useState} from 'react'
+import {supabase} from '../FrontendAuth/googleAuth'
 import axios from 'axios'
 
 export default function SignUp(){
@@ -8,6 +9,22 @@ export default function SignUp(){
     const [validEmail, setValidEmail] = useState<Boolean>(false)
     const [loading, setLoading] = useState<Boolean>(false)
     const navigate = useNavigate()
+
+
+
+    async function signInWithGoogle(){
+        await supabase.auth.signInWithOAuth({
+            provider: 'google',
+            options: {
+                redirectTo: 'http://localhost:5173/dashboard',
+                queryParams: {
+                    access_type: 'offline',
+                    prompt: 'consent',
+                }
+            }
+        })
+    }
+
 
     function realTimeInput(e: any){
         const value = e.target.value
@@ -49,7 +66,11 @@ export default function SignUp(){
                 console.log(formValues)
                 const response = await axios.post('http://localhost:3000/signup', formValues, {withCredentials:true})
                 const data = response.data
-                
+                console.log(data.accessToken)
+                await supabase.auth.setSession({
+                    access_token: data.accessToken,
+                    refresh_token: data.refreshToken
+                })
                 setUserSession({accessToken: data.accessToken})
                 console.log('heres navigate')
                 navigate('/dashboard')       
@@ -59,6 +80,7 @@ export default function SignUp(){
                 console.log(error) 
             }
         }
+
 
     return(
         <div className='min-h-screen w-full flex items-center justify-center bg-[#0a0a0a]'>
@@ -87,6 +109,9 @@ export default function SignUp(){
                           </button>
                     }
                 </form>
+
+                <button type = 'button' onClick = {signInWithGoogle} className='w-full py-2.5 text-sm font-medium text-[#d0d0d0] bg-transparent border border-[#2a2a2a] rounded-[5px] cursor-pointer'> 
+                    Continue with Google </button>
 
                 <div className='text-center text-sm text-[#555555]'>
                     <p>Already have an account? <Link to='/login' className='font-medium text-[#d0d0d0]'>Log In</Link></p>

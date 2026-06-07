@@ -5,11 +5,11 @@ import '../index.css'
 export default function LandingPage(){
     return(
         <>
-            <div className = 'p-4 w-full h-screen grid grid-rows-[50px_1fr] border-box'>
+            <div className = 'w-full h-screen grid grid-rows-[50px_1fr]'>
                 <NavBar/>
                 <HeroSection />
             </div>
-            <div className = 'p-2'>
+            <div>
                 <Section1/>
                 <Section2/>
                 <Pricing />

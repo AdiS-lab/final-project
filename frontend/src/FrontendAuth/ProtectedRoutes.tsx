@@ -2,49 +2,81 @@ import {useUserSession} from './globalState'
 import {useNavigate, Outlet} from 'react-router-dom'
 import {useEffect, useState} from 'react'
 import axios from 'axios'
+import {supabase} from './googleAuth'
 
 //____________ Get access token from _________ 
 function ProtectedRoutes(){
     let {userSession, setUserSession} = useUserSession((state)=> state)
-    let accessToken = userSession.accessToken
     let [hasAccess, setHasAccess] = useState<Boolean>(false)
-
-    console.log('protected routes access token: '+ userSession.accessToken)
+    let token = userSession.accessToken
 
     const navigate = useNavigate()
 
-    axios.interceptors.response.use(
-        response => response,
-        async error =>{
-            if (error.response?.status === 401){
-                const response = await axios.post('http://localhost:3000/auth/refresh')
-                console.log(typeof response.data)
-                setUserSession({accessToken: response.data})
-                console.log(error.config.headers)
-                error.config.headers['Authorization'] = `Bearer ${response.data}`
-                return axios(error.config) //  where error.config is the previous req
-            }
-            return Promise.reject(error)
-        }
-
-    )
 
     useEffect(()=>{
-    async function validateToken(): Promise<void>{
-            try{
-                const header = {headers:{Authorization: `Bearer ${accessToken}`}}
-                const response = await axios.get('http://localhost:3000/auth/me', header)
-                console.log(response)
-                setHasAccess(true)
-                // response has user info, can remove this entirely perhaps
+        axios.interceptors.response.use(
+            response => response,
+            async error =>{
+                if (error.response?.status === 401){
+                    // const response = await axios.post('http://localhost:3000/auth/refresh')
+                    // console.log(typeof response.data)
+                    // setUserSession({accessToken: response.data})
+                    // console.log(error.config.headers)
+
+                    console.log('made it to interceptor')
+                    const {data} = await supabase.auth.refreshSession()
+                    if(!data.session) return Promise.reject(error)
+                    console.log("intercepted: " + data.session.access_token)
+                    error.config.headers['Authorization'] = `Bearer ${data.session.access_token}`
+                    return axios(error.config) //  where error.config is the previous req
                 }
-            catch(error){
-                navigate('/login', {replace:true})
                 console.log(error)
+                return Promise.reject(error)
             }
-        }   
-        validateToken()
-        },[])
+
+        )
+    }, [])
+
+    async function validateToken(token: string | undefined){
+        try{
+            const header = {headers:{Authorization: `Bearer ${token}`}}
+            const response = await axios.get('http://localhost:3000/auth/me', header)
+            console.log(response)
+            setHasAccess(true)
+            return
+            }
+        catch(error){
+                console.log("line 54" + error)
+                navigate('/login', {replace:true})
+            }
+    }
+
+   
+
+    useEffect(()=>{
+        console.log(userSession.accessToken)
+        if(token){
+            validateToken(token)
+            return
+        }
+        
+        const {data} = supabase.auth.onAuthStateChange(async (event, session)=>{
+            console.log('made it here')
+            if(session?.access_token){
+                setUserSession({accessToken: session.access_token})
+                validateToken(session.access_token)
+            }
+            else{
+                validateToken(token)
+            }
+        })
+
+        return () => data.subscription.unsubscribe()
+    },[])
+
+
+    console.log('on protected routes')
+    console.log(userSession.accessToken)
 
     return(
     <>

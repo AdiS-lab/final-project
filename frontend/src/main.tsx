@@ -16,17 +16,24 @@ import axios from "axios"
 axios.defaults.withCredentials = true
 // axios.defaults.baseURL = import.meta.env.VITE_API_URL
 
+
+  
+
 const router = createBrowserRouter([
   {
     element: <ProtectedRoutes />,
     children: [
       {
         path:'/dashboard',
-        element:<Dashboard/>
+        element:<Dashboard/>,
+        errorElement:<ErrorHandle />
+
       },
       {
         path: '/canvas/:id',
-        element: <Canvas />
+        element: <Canvas />,
+        errorElement:<ErrorHandle />
+
       }
     ]
   },
@@ -37,11 +44,15 @@ const router = createBrowserRouter([
   },
   {
     path: '/signup',
-    element: <SignUp />
+    element: <SignUp />,
+    errorElement:<ErrorHandle />
+
   },
   {
     path: '/login',
-    element: <Login />
+    element: <Login />,
+    errorElement:<ErrorHandle />
+
   },
 
 ])

@@ -1,12 +1,27 @@
 import {Link, useNavigate} from 'react-router-dom'
 import {useUserSession} from '../FrontendAuth/globalState'
 import {useState} from 'react'
+import {supabase} from '../FrontendAuth/googleAuth'
 import axios from 'axios'
 
 export default function Login(){
     const {setUserSession} = useUserSession((state) => state)
     const [loading, setLoading] = useState<Boolean>(false)
     const navigate = useNavigate()
+
+    async function handleLoginGoogle(){
+        await supabase.auth.signInWithOAuth({
+            provider: 'google',
+            options:{
+                redirectTo: 'http://localhost:5173/dashboard',
+                queryParams:{
+                    access_type: 'offline',
+                    prompt: 'consent'
+                }
+            }   
+        })
+    }
+
 
     function realTimeInput(e: any){
         const value = e.target.value
@@ -36,6 +51,10 @@ export default function Login(){
             const sendData = Object.fromEntries(formData)
             const response = await axios.post('http://localhost:3000/login', sendData)
             const data = response.data
+            await supabase.auth.setSession({
+                    access_token: data.accessToken,
+                    refresh_token: data.refreshToken
+            })
             setUserSession({accessToken: data.accessToken})
             navigate('/dashboard', {replace: true})
         }
@@ -72,6 +91,10 @@ export default function Login(){
                           </button>
                     }
                 </form>
+
+                <button type='button' onClick={handleLoginGoogle} className='w-full py-2.5 text-sm font-medium text-[#d0d0d0] bg-transparent border border-[#2a2a2a] rounded-[5px] cursor-pointer'>
+                    Continue with Google
+                </button>
 
                 <div className='text-center text-sm text-[#555555]'>
                     <p>Don't have an account? <Link to='/signup' className='font-medium text-[#d0d0d0]'>Sign Up</Link></p>
