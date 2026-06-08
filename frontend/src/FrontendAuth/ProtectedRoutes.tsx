@@ -47,7 +47,7 @@ function ProtectedRoutes(){
             }
         catch(error){
                 console.log("line 54" + error)
-                navigate('/login', {replace:true})
+                navigate('/signup', {replace:true})
             }
     }
 

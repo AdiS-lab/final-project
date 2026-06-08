@@ -48,8 +48,8 @@ export function HeroSection(){
                 <div className='w-full rounded-lg overflow-hidden' style={{
                     height: '97vh',
                     border: '1px solid #1f1f1f',
-                }}>
-                    <video className='w-full h-full object-cover' src='../videos/Video Project 1.mp4' autoPlay muted loop></video>
+                }}> 
+                    <video className='w-full h-full object-cover' src='https://y0kk3sxdufphvwmb.public.blob.vercel-storage.com/Video%20Project%201.mp4' autoPlay muted loop></video>
                 </div>
             </div>
         </div>

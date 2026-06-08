@@ -18,6 +18,7 @@ function Canvas() {
 
   let [w, setW] = useState<number>(1)
   let [h, setH] = useState<number>(1)
+  const [loading, setLoading] = useState<Boolean>(false)
   
 
   let gestureRecognizer: any //**** change this  type to proper type ***/
@@ -314,6 +315,7 @@ function Canvas() {
       e.preventdefault()
     }
     try{
+        setLoading(true)
         console.log('making it')
         if(!stageRef.current) return 
         const imgUrl = stageRef.current.toDataURL()
@@ -444,7 +446,7 @@ function Canvas() {
   //______________________________ basic layout ________________________________________________
   return (
     <div className='flex flex-row w-full h-screen overflow-hidden' style={{ background: '#0a0a0a', fontFamily: 'Inter, system-ui, sans-serif' }}>
-      <Sidebar onStart = {startWebcam} onStop = {stopWebcam} clearAll = {clearAll} switchCanvas = {switchOutCanvas} webcamActive = {webcamSelected}/>
+      <Sidebar onStart = {startWebcam} onStop = {stopWebcam} clearAll = {clearAll} switchCanvas = {switchOutCanvas} webcamActive = {webcamSelected}loading = {loading}/>
         <div className = 'grid grid-cols-[1fr_200px] w-full'>
           <div ref = {container} className = 'h-full relative overflow-hidden' style={{ background: '#f5f5f0' }}>
             <div ref={modesRef} className='absolute top-3 left-1/2 -translate-x-1/2 z-10 flex gap-2'>
