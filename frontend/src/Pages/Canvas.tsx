@@ -10,7 +10,7 @@ import * as tf from '@tensorflow/tfjs'
 import Konva from 'konva'
 import axios from 'axios'
 import Sidebar from '../Components/CanvasSidebar.tsx'
-import eraseImg from '../../videos/erase.png'
+import okImg from '../../videos/ok.png'
 import stopImg from '../../videos/stop.png'
 import zoominImg from '../../videos/zoomin.png'
 import zoomoutImg from '../../videos/zoomout.png'
@@ -20,10 +20,10 @@ import closeImg from '../../videos/close.png'
 const gestures = [
   { imgs: [pointerImg], label: 'draw' },
   { imgs: [stopImg], label: 'stop' },
-  { imgs: [eraseImg], label: 'erase' },
+  { imgs: [okImg], label: 'erase' },
   { imgs: [zoomoutImg, stopImg], label: 'zoom out' },
   { imgs: [zoominImg, closeImg], label: 'zoom in' },
-]
+] // define arr for easy mapping to DOM
 
 function Canvas() {
   let classes = ["STOP", "CLOSE", "POINTER", "OK", "ERASE", "DRAW", "ZOOM IN", "ZOOM OUT"]
