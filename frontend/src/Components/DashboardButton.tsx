@@ -8,7 +8,7 @@ type buttonTypes = {
 export function DashboardButton({onClick, name}: buttonTypes){
     return (
         <button onClick = {onClick} className='flex items-center text-xs font-medium cursor-pointer w-full px-4 h-11 border-none border-b border-[#1a1a1a]'
-        style={{ color: '#888888', background: 'rgba(255,255,255,0.03)' }}>{name}</button>
+        style={{ color: '#d0d0d0', background: 'rgba(255,255,255,0.03)' }}>{name}</button>
     )
 }
 

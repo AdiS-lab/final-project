@@ -11,16 +11,15 @@ function Dashboard(){
     const header = {headers:{Authorization: `Bearer ${accessToken}`}}
     const [loading, setLoading] = useState<Boolean>(false)
     const [signoutLoading, setSignoutLoading] = useState<Boolean>(false)
+    const [name, setName] = useState("")
+    let [imgArr, setImgArr] = useState([])
+    const dialogRef = useRef<HTMLDialogElement>(null)
+
+
 
 
     const navigate = useNavigate()
-
     
-
-    const [name, setName] = useState("")
-    let [imgArr, setImgArr] = useState([])
-
-    const dialogRef = useRef<HTMLDialogElement>(null)
     useEffect(()=>{
         async function getCanvasData(){
             try{
@@ -32,7 +31,6 @@ function Dashboard(){
                     name: string
                 }
 
-                console.log("Dashboard access token: " +  accessToken)
                 const canvasParts = await axios.get('/canvasData', header)
                 const data = canvasParts.data.response
                 console.log("canvas data look for name " +  data[0].name)
@@ -63,7 +61,10 @@ function Dashboard(){
     }   
 
     async function handleCreate(){
+        console.log(dialogRef.current)
         if(!dialogRef.current) return
+        if(name === '') return
+
         try{
             console.log(name)
             setLoading(true)
@@ -104,8 +105,7 @@ function Dashboard(){
         setSignoutLoading(true)
         axios.delete(`/deleteUser`, header)
         navigate('/', {replace:true})
-    }
-
+    } 
 
 
     return(

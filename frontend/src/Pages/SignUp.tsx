@@ -11,7 +11,6 @@ export default function SignUp(){
     const navigate = useNavigate()
 
 
-
     async function signInWithGoogle(){
         await supabase.auth.signInWithOAuth({
             provider: 'google',

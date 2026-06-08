@@ -12,6 +12,8 @@ app.use(cors({
     origin: 'https://frontendhanddraw.vercel.app',
     credentials:true})) // have to specify origin for creating cookies
 
+    //origin = https://frontendhanddraw.vercel.app
+
 app.use(cookieParser()) // to read cookies have to be able to parse
 
 

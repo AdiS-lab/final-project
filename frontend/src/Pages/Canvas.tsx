@@ -1,14 +1,29 @@
 import {useRef, useState, useEffect,} from 'react'
 import {useParams, useNavigate} from 'react-router-dom'
 import { GestureRecognizer, FilesetResolver, DrawingUtils} from '@mediapipe/tasks-vision';
-import * as tf from '@tensorflow/tfjs'
 import type { LayersModel } from '@tensorflow/tfjs'
 import {normalizePoints} from '../HelperFunctions/helperFunctions'
 import { Stage, Layer, Image, Circle } from 'react-konva'
+import {useUserSession} from '../FrontendAuth/globalState'
+
+import * as tf from '@tensorflow/tfjs'
 import Konva from 'konva'
 import axios from 'axios'
 import Sidebar from '../Components/CanvasSidebar.tsx'
-import {useUserSession} from '../FrontendAuth/globalState'
+import eraseImg from '../../videos/erase.png'
+import stopImg from '../../videos/stop.png'
+import zoominImg from '../../videos/zoomin.png'
+import zoomoutImg from '../../videos/zoomout.png'
+import pointerImg from '../../videos/pointer.png'
+import closeImg from '../../videos/close.png'
+
+const gestures = [
+  { imgs: [pointerImg], label: 'draw' },
+  { imgs: [stopImg], label: 'stop' },
+  { imgs: [eraseImg], label: 'erase' },
+  { imgs: [zoomoutImg, stopImg], label: 'zoom out' },
+  { imgs: [zoominImg, closeImg], label: 'zoom in' },
+]
 
 function Canvas() {
   let classes = ["STOP", "CLOSE", "POINTER", "OK", "ERASE", "DRAW", "ZOOM IN", "ZOOM OUT"]
@@ -43,7 +58,6 @@ function Canvas() {
   const imageRef = useRef<Konva.Image>(null)
   const overlayRef = useRef<Konva.Layer>(null)
   const modesRef = useRef<HTMLDivElement>(null)
-
 
   //________________________________ this is used to intialize the offscreen canvas drawing on when first loading _______________________
    useEffect(()=>{
@@ -116,7 +130,7 @@ function Canvas() {
         const mediastream = await navigator.mediaDevices.getUserMedia({video:{width: 200, height: 200, frameRate: {ideal:60}}})
         videoRef.current.srcObject = mediastream
 
-        model = await tf.loadLayersModel('/tfjs_model_for_web/model.json')
+        model = await tf.loadLayersModel('/feedForwardModel/model.json')
         await initializeGestureRecognizer()
         renderLoop(lastVideoTime, gestureRecognizer) 
     }
@@ -155,7 +169,7 @@ function Canvas() {
 
     const oldScale = stage.scaleX()
 
-    const displayArr = []
+    let displayArr: Array<string> = []
     //________________________________ THIS IS USED TO DRAW ON VIDEO + DISPLAY GESTURE_______________________________________________
 
     for(const handLandmark of result.landmarks){
@@ -201,16 +215,16 @@ function Canvas() {
         let y1 = yTrue
         draw(x1,y1,context)
     }
-    if(MODE === 'zoom out' && (landmarks || landmarksRight)){
+    if(MODE === 'zoom out' && (landmarks && landmarksRight)){
       context.lineWidth = 5
-      const distance = Math.sqrt((landmarks[8].x - landmarks[4].x)**2 + (landmarks[8].y - landmarks[4].y)**2)
+      const distance = Math.sqrt((landmarksRight[8].x - landmarksRight[4].x)**2 + (landmarksRight[8].y - landmarksRight[4].y)**2)
       zoom = false
       controlZoom(distance*SCALE, zoom)
     }
     
-     if(MODE === 'zoom in' && (landmarks || landmarksRight)){
+     if(MODE === 'zoom in' && (landmarks && landmarksRight)){
       context.lineWidth = 5
-      const distance = Math.sqrt((landmarks[8].x - landmarks[4].x)**2 + (landmarks[8].y - landmarks[4].y)**2)
+      const distance = Math.sqrt((landmarksRight[8].x - landmarksRight[4].x)**2 + (landmarksRight[8].y - landmarksRight[4].y)**2)
       zoom = true
       controlZoom(distance*SCALE, zoom)
     }
@@ -218,12 +232,13 @@ function Canvas() {
     //________________________GESTURE RECOGNITION______________________
 
  
-
-    if(displayArr[0] === 'DRAW' && displayArr[1] === 'DRAW') MODE = 'draw'
-    if(displayArr[0] === 'STOP' && displayArr[1] === 'STOP') MODE = 'stop'
-    if(displayArr[0] === 'ERASE' && displayArr[1] === 'ERASE') MODE = 'erase'
-    if(displayArr[0] === 'ZOOM OUT' && displayArr[1] === 'ZOOM OUT') MODE = 'zoom out'
-    if(displayArr[0] === 'ZOOM IN' && displayArr[1] === 'ZOOM IN') MODE = 'zoom in'
+    console.log(displayArr)
+    if(displayArr[0] === 'POINTER' && displayArr.length<2) MODE = 'draw'
+    if(displayArr[0] === 'STOP' && displayArr.length<2) MODE = 'stop'
+    if(displayArr[0] === 'OK' && displayArr.length<2) MODE = 'erase'
+    if(displayArr.includes('ZOOM OUT') && displayArr.includes('STOP')) MODE = 'zoom out'
+    if(displayArr.includes('ZOOM IN') && displayArr.includes('CLOSE')) MODE = 'zoom in'
+    if(displayArr.length<1) MODE = 'stop'
 
     if(modesRef.current){
       Array.from(modesRef.current.children).forEach((child: any) => {
@@ -232,14 +247,12 @@ function Canvas() {
         child.style.background = active ? '#2a2a2a' : '#858585'
       })
     }
-      
+    
+  } //______ END PROCESS RESULT
 
-
-    console.log(displayArr)
-
-  }
 
   let coords: Array<Array<number>> = []
+
 
   //_____________________ helper funcs moreso, much smaller in scale _______________________________________
 
@@ -291,36 +304,7 @@ function Canvas() {
       }
   }
 
-  async function switchOutCanvas(e: any){
-    if(webcamSelected){
-      e.preventdefault()
-    }
-    try{
-        setLoading(true)
-        if(!stageRef.current) return 
-        const imgUrl = stageRef.current.toDataURL()
-        const blob = b64toBlob(imgUrl)
-        const formData = new FormData()
-        formData.append('image', blob)
-        console.log('making it past')
-
-        const header = {headers: {Authorization: `Bearer ${accessToken}`}}
-
-        const blobResponse = await axios.post(`/uploadBlob/${id}`, formData, header)
-        const publicUrl = blobResponse.data
-
-        await axios.put(`/canvas/${id}`, {publicUrl}, {withCredentials:true})
-        console.log(publicUrl)
-
-        
-        navigate('/dashboard', {replace:true})
-    }
-    catch(error){console.log(error)}
-  }
-
-  function stopWebcam(){
-
-
+  function stopEverything(){
 
     const canvasForVideo = visualRef.current!
     const ctxForVideo = canvasForVideo.getContext("2d")!
@@ -347,8 +331,6 @@ function Canvas() {
     ctx.clearRect(0, 0, canvas.width, canvas.height)
     imageRef.current?.getLayer()?.batchDraw()
   }
-
-
   
 //_______________ ORIGINAL WAY TO ACTUALLY CHANGE CANVAS 
   function onWheel(e: any){
@@ -367,7 +349,6 @@ function Canvas() {
       x: (pointer.x - stage.x())/ oldScale,
       y: (pointer.y - stage.y()) / oldScale
     }
-  
 
 
     const direction = e.evt.deltaY>0 ? -1 : 1
@@ -412,11 +393,56 @@ function Canvas() {
     return blob
 
   }
+
+  async function save(){
+  if(!stageRef.current) return 
+    const imgUrl = stageRef.current.toDataURL()
+    const blob = b64toBlob(imgUrl)
+    const formData = new FormData()
+    formData.append('image', blob)
+
+    const header = {headers: {Authorization: `Bearer ${accessToken}`}}
+
+    const blobResponse = await axios.post(`/uploadBlob/${id}`, formData, header)
+    const publicUrl = blobResponse.data
+
+    await axios.put(`/canvas/${id}`, {publicUrl}, {withCredentials:true})
+    console.log(publicUrl)
+  }
+
+  async function switchOutCanvas(e: any){
+    console.log(e)
+    try{
+        setLoading(true)
+        stopEverything()
+        await save()
+        navigate('/dashboard', {replace:true})
+    }
+    catch(error){console.log(error)}
+  }
+  async function stateHandler(){
+        window.addEventListener('popstate', stateHandler) 
+        console.log('made it to stateHandler')
+        stopEverything()
+        await save()
+        navigate('/dashboard', {replace:true})
+
+  }
+
+
+  useEffect(()=>{
+    window.history.pushState(null, '', window.location.href)
+    window.addEventListener('popstate', stateHandler) 
+    
+    return ()=> window.removeEventListener('popstate', stateHandler)
+
+  }, [])
+
   
   //______________________________ basic layout ________________________________________________
   return (
     <div className='flex flex-row w-full h-screen overflow-hidden' style={{ background: '#0a0a0a', fontFamily: 'Inter, system-ui, sans-serif' }}>
-      <Sidebar onStart = {startWebcam} onStop = {stopWebcam} clearAll = {clearAll} switchCanvas = {switchOutCanvas} webcamActive = {webcamSelected}loading = {loading}/>
+      <Sidebar onStart = {startWebcam} onStop = {stopEverything} clearAll = {clearAll} switchCanvas = {switchOutCanvas} webcamActive = {webcamSelected}loading = {loading}/>
         <div className = 'grid grid-cols-[1fr_200px] w-full'>
           <div ref = {container} className = 'h-full relative overflow-hidden' style={{ background: '#f5f5f0' }}>
             <div ref={modesRef} className='absolute top-3 left-1/2 -translate-x-1/2 z-10 flex gap-2'>
@@ -434,9 +460,23 @@ function Canvas() {
                 </Layer>
             </Stage>}
           </div>
-          <div className='relative border-l border-[#1a1a1a]' style={{ background: '#111111' }}>
-            <video className='absolute right-0 top-0 w-full scale-x-[-1]' ref={videoRef} autoPlay />
-            <canvas className ='w-50 h-50 absolute right-0 top-0 z-10 scale-x-[-1]' ref = {visualRef}></canvas>
+          <div className='border-l border-[#1a1a1a] flex flex-col overflow-hidden' style={{ background: '#111111' }}>
+            <div className='relative w-full flex-shrink-0'>
+              <video className='w-full scale-x-[-1]' ref={videoRef} autoPlay />
+              <canvas className='w-full h-full absolute right-0 top-0 z-10 scale-x-[-1]' ref={visualRef}></canvas>
+            </div>
+            <div className='flex flex-col items-center gap-2 p-2'>
+              {gestures.map(({ imgs, label }) => (
+                <div key={label} className='flex flex-col items-center gap-1'>
+                  <div className='flex gap-1'>
+                    {imgs.map((img, i) => (
+                      <img key={i} src={img} alt={label} className='w-16 h-16 object-contain' />
+                    ))}
+                  </div>
+                  <p className='text-xs' style={{ color: '#b0b0b0' }}>{label}</p>
+                </div>
+              ))}
+            </div>
           </div>
         </div>
     </div>
