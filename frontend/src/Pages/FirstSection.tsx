@@ -80,7 +80,7 @@ export function Section2(){
             background: '#0a0a0a',
         }}>
             <Card header='Hand-Tracking' description='Move your hands around and see what happens. This project was just practice in getting an app developed end to end.'/>
-            <Card header='Built From Scratch' description='No drag-and-drop builders, no shortcuts. Every layer of this — from the ML model to the auth flow — was figured out the hard way.'/>
+            <Card header='Built From Scratch' description='No drag-and-drop builders, no shortcuts. Every layer of this, from the ML model to the auth flow, was figured out the hard way.'/>
 
         </div>
     )
