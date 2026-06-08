@@ -23,10 +23,8 @@ function ProtectedRoutes(){
                     // setUserSession({accessToken: response.data})
                     // console.log(error.config.headers)
 
-                    console.log('made it to interceptor')
                     const {data} = await supabase.auth.refreshSession()
                     if(!data.session) return Promise.reject(error)
-                    console.log("intercepted: " + data.session.access_token)
                     error.config.headers['Authorization'] = `Bearer ${data.session.access_token}`
                     return axios(error.config) //  where error.config is the previous req
                 }
@@ -54,7 +52,6 @@ function ProtectedRoutes(){
    
 
     useEffect(()=>{
-        console.log(userSession.accessToken)
         if(token){
             validateToken(token)
             return
@@ -75,8 +72,7 @@ function ProtectedRoutes(){
     },[])
 
 
-    console.log('on protected routes')
-    console.log(userSession.accessToken)
+ 
 
     return(
     <>

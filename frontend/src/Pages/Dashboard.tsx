@@ -11,6 +11,8 @@ function Dashboard(){
     const header = {headers:{Authorization: `Bearer ${accessToken}`}}
     const [loading, setLoading] = useState<Boolean>(false)
     const [signoutLoading, setSignoutLoading] = useState<Boolean>(false)
+    const [deleteLoading, setDeleteLoading] = useState<Boolean>(false)
+
 
     const navigate = useNavigate()
 
@@ -93,6 +95,7 @@ function Dashboard(){
     } 
     
     async function deleteSession(id: string){
+        setDeleteLoading(true)
         console.log('made it to delete')
         const response = await axios.delete(`/deleteCanvas/${id}`, header)
         console.log(response)
@@ -111,7 +114,7 @@ function Dashboard(){
         <>
             <div className= 'flex flex-row w-full min-h-screen'>
                 <SidebarDashboard onClick = {goToCanvas} signOut = {signOut} signoutLoading = {signoutLoading}/>
-                <Gallery imgArr = {imgArr}  handleClick = {handleClick} deleteSession = {deleteSession}/>
+                <Gallery imgArr = {imgArr}  handleClick = {handleClick} deleteSession = {deleteSession} deleteLoading = {deleteLoading}/>
             </div>
             <dialog ref={dialogRef} className='w-[360px] rounded-xl border border-[#2a2a2a] fixed top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 m-0' style={{ background: 'rgba(22, 22, 22, 0.92)', color: '#d0d0d0' }}>
                 <div className='flex flex-col gap-4 p-6'>

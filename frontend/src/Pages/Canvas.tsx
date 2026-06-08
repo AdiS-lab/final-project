@@ -55,8 +55,6 @@ function Canvas() {
     setW(container.current.getBoundingClientRect().width)
     setH(container.current.getBoundingClientRect().height)
 
-    console.log(width)
-
     const canvas = document.createElement('canvas')
     canvas.width = Math.round(width / 0.3)
     canvas.height = Math.round(height / 0.3)
@@ -70,20 +68,6 @@ function Canvas() {
 
  
   },[])
-
-//   useEffect(()=>{
-//     async function getName(){
-//       try{
-//         const canvasData = await axios.get('/canvasData')
-//       }
-//       catch(error){console.log(error)}
-//     }
-// }, [])
-
-
-  console.log(canvasOffScreen)
-
-  let scaleX = useRef<number>(0)
 
   // ___________________ intialize the CNN ________________________________________
   async function initializeGestureRecognizer() {
@@ -177,7 +161,6 @@ function Canvas() {
     for(const handLandmark of result.landmarks){
       overlay.drawLandmarks(handLandmark, {color:'white', radius: 2} )
       overlay.drawConnectors(handLandmark, GestureRecognizer.HAND_CONNECTIONS, {color:'green'})
-      console.log(oldScale)
       xTrue = (((handLandmark[8].x*-1+1)*window.innerWidth) - stage.x()) / oldScale
       yTrue =  ((handLandmark[8].y*window.innerHeight) -stage.y()) / oldScale
 
@@ -188,7 +171,6 @@ function Canvas() {
           fill: 'green',
       }))
 
-      console.log(overlayTrack)
       overlayTrack?.batchDraw()
 
       image?.getLayer()?.batchDraw();
@@ -311,12 +293,10 @@ function Canvas() {
 
   async function switchOutCanvas(e: any){
     if(webcamSelected){
-      console.log(webcamSelected)
       e.preventdefault()
     }
     try{
         setLoading(true)
-        console.log('making it')
         if(!stageRef.current) return 
         const imgUrl = stageRef.current.toDataURL()
         const blob = b64toBlob(imgUrl)
@@ -341,7 +321,6 @@ function Canvas() {
   function stopWebcam(){
 
 
-    console.log(scaleX)
 
     const canvasForVideo = visualRef.current!
     const ctxForVideo = canvasForVideo.getContext("2d")!
@@ -353,7 +332,6 @@ function Canvas() {
     if(videoRef.current?.srcObject){
       const source = videoRef.current.srcObject as MediaStream
       const tracks = source.getTracks()
-      console.log(tracks)
       tracks.forEach((track)=>{
           track.stop()
       })
@@ -363,7 +341,6 @@ function Canvas() {
 
   function clearAll(){
 
-   console.log('made it')
     const canvas = canvasOffScreen.current                                                            
     if (!canvas) return                                                                             
     const ctx = canvas.getContext('2d')!
@@ -390,8 +367,7 @@ function Canvas() {
       x: (pointer.x - stage.x())/ oldScale,
       y: (pointer.y - stage.y()) / oldScale
     }
-    // console.log('stagex: ' + stage.x())
-    // console.log('stagey: ' + stage.y())
+  
 
 
     const direction = e.evt.deltaY>0 ? -1 : 1
@@ -436,13 +412,7 @@ function Canvas() {
     return blob
 
   }
-
-
-
-  console.log('STOPHERE__________________')
-  console.log(w/scale.current)
   
-
   //______________________________ basic layout ________________________________________________
   return (
     <div className='flex flex-row w-full h-screen overflow-hidden' style={{ background: '#0a0a0a', fontFamily: 'Inter, system-ui, sans-serif' }}>
