@@ -1,65 +1,52 @@
-import { StrictMode } from 'react'
-import { createRoot } from 'react-dom/client'
-import {createBrowserRouter, RouterProvider} from 'react-router-dom'
+import { StrictMode } from "react";
+import { createRoot } from "react-dom/client";
+import { createBrowserRouter, RouterProvider } from "react-router-dom";
 
-
-import ProtectedRoutes from './FrontendAuth/ProtectedRoutes'
-import Canvas from './Pages/Canvas'
-import LandingPage from './Pages/LandingPage'
-import SignUp from './Pages/SignUp'
-import Login from './Pages/LogIn'
-import ErrorHandle from './ErrorHandle'
-import Dashboard from './Pages/Dashboard'
-import './index.css'
-import axios from "axios"
-
-axios.defaults.withCredentials = true
-axios.defaults.baseURL = import.meta.env.VITE_API_URL
-
-
-  
+import ProtectedRoutes from "./auth/ProtectedRoutes";
+import Canvas from "./pages/Canvas";
+import LandingPage from "./pages/LandingPage";
+import SignUp from "./pages/SignUp";
+import Login from "./pages/LogIn";
+import ErrorHandle from "./ErrorHandle";
+import Dashboard from "./components/Dashboard";
+import "./api";
+import "./index.css";
 
 const router = createBrowserRouter([
   {
     element: <ProtectedRoutes />,
     children: [
       {
-        path:'/dashboard',
-        element:<Dashboard/>,
-        errorElement:<ErrorHandle />
-
+        path: "/dashboard",
+        element: <Dashboard />,
+        errorElement: <ErrorHandle />,
       },
       {
-        path: '/canvas/:id',
+        path: "/canvas/:id",
         element: <Canvas />,
-        errorElement:<ErrorHandle />
-
-      }
-    ]
+        errorElement: <ErrorHandle />,
+      },
+    ],
   },
   {
-    path: '/',
-    element:<LandingPage />,
-    errorElement:<ErrorHandle />
+    path: "/",
+    element: <LandingPage />,
+    errorElement: <ErrorHandle />,
   },
   {
-    path: '/signup',
+    path: "/signup",
     element: <SignUp />,
-    errorElement:<ErrorHandle />
-
+    errorElement: <ErrorHandle />,
   },
   {
-    path: '/login',
+    path: "/login",
     element: <Login />,
-    errorElement:<ErrorHandle />
-
+    errorElement: <ErrorHandle />,
   },
+]);
 
-])
-
-
-createRoot(document.getElementById('root')!).render(
+createRoot(document.getElementById("root")!).render(
   <StrictMode>
-    <RouterProvider router = {router}/>
-  </StrictMode>
-)
+    <RouterProvider router={router} />
+  </StrictMode>,
+);

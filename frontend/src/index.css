@@ -1,15 +1,15 @@
 @import "tailwindcss";
 
 body {
-  background-color: #0a0a0a;
+  background-color: #121214;
   color: #d0d0d0;
   margin: 0;
-  font-family: 'Inter', system-ui, sans-serif;
+  font-family: 'Josefin Sans', system-ui, sans-serif;
   -webkit-font-smoothing: antialiased;
 }
 
 h1, h2, h3 {
-  font-family: 'Playfair Display', Georgia, serif;
+  font-family: 'Source Serif 4', serif;
 }
 
 dialog::backdrop {

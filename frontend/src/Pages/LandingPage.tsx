@@ -1,21 +1,20 @@
+import { NavBar, HeroSection, Description, Footer } from "../components/LandingPage";
+import "../index.css";
 
-import {NavBar, HeroSection, Section1, Section2, Pricing, Footer} from './FirstSection.tsx'
-import '../index.css'
+export default function LandingPage() {
+  return (
+    <>
+      <NavBar />
+      <div className="w-full h-screen">
+        <HeroSection />
+      </div>
 
-export default function LandingPage(){
-    return(
-        <>
-            <div className = 'w-full h-screen grid grid-rows-[50px_1fr]'>
-                <NavBar/>
-                <HeroSection />
-            </div>
-            <div>
-                <Section1/>
-                <Section2/>
-                <Pricing />
-                <Footer />
-            </div>
-        </>
-    )
+      <div>
+        <Description />
+        {/* <Section1 />
+        <Section2 /> */}
+        <Footer />
+      </div>
+    </>
+  );
 }
-

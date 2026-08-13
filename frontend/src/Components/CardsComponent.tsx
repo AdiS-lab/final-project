@@ -7,8 +7,8 @@ export function Card({ header, description }: CardProps){
 
     return(
         <div className='grid grid-rows-[40px_1fr] w-80 h-72 p-6' style={{
-            background: '#111111',
-            border: '1px solid #1f1f1f',
+            background: '#1a1a1e',
+            border: '1px solid #28282c',
             borderRadius: '8px',
         }}>
             <div className='flex items-center'>

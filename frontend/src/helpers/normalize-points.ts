@@ -9,15 +9,15 @@ export function normalizePoints(landmarks: landmarkType){
     const xScale = window.innerWidth - 5 - 200
     const yScale = 5 // find the relative coords of video 
 
-    let x = landmarks[0].x*200 + xScale
-    let y = landmarks[0].y*200 + yScale
+    const x = landmarks[0].x*200 + xScale
+    const y = landmarks[0].y*200 + yScale
 
-    let arrOfData: Array<number> = []
+    const arrOfData: Array<number> = []
     let maxCoord = 0;
 
     for(let i=0; i<21; i++){
-    let x_temp = landmarks[i].x*200+xScale - x
-    let y_temp = landmarks[i].y*200+yScale - y
+    const x_temp = landmarks[i].x*200+xScale - x
+    const y_temp = landmarks[i].y*200+yScale - y
     if(Math.abs(x_temp)>maxCoord){
         maxCoord  = Math.abs(x_temp) 
     }

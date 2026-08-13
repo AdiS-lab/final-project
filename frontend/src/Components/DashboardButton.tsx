@@ -1,4 +1,4 @@
-import {Link} from 'react-router-dom'
+import { StyledLink } from '../ui'
 
 type buttonTypes = {
     onClick: any,
@@ -7,7 +7,7 @@ type buttonTypes = {
 
 export function DashboardButton({onClick, name}: buttonTypes){
     return (
-        <button onClick = {onClick} className='flex items-center text-xs font-medium cursor-pointer w-full px-4 h-11 border-none border-b border-[#1a1a1a]'
+        <button onClick = {onClick} className='flex items-center text-xs font-medium cursor-pointer w-full px-4 h-11 border-none border-b border-[#222226]'
         style={{ color: '#d0d0d0', background: 'rgba(255,255,255,0.03)' }}>{name}</button>
     )
 }
@@ -21,12 +21,9 @@ type linkTypes = {
 export function DashboardLink({onSelect, name, to}: linkTypes){
 
     return (
- 
-        <Link
-            onClick={(e) => {onSelect(e)}}
-            to= {to}
-            className='flex items-center justify-center text-xs font-medium cursor-pointer w-[60px] h-[60px] border border-[#2a2a2a] rounded-md'
-            style={{ color: '#d0d0d0', background: 'rgba(255,255,255,0.04)' }}
-        >{name}</Link>
+        <StyledLink
+            to={to}
+            className='flex items-center justify-center w-[60px] h-[60px] text-xs rounded-md'
+        >{name}</StyledLink>
     )
 }

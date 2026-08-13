@@ -1,4 +1,4 @@
-import {Link} from 'react-router-dom'
+import { StyledLink } from './ui'
 
 export default function ErrorHandle(){
     return(
@@ -6,9 +6,9 @@ export default function ErrorHandle(){
             <div className='flex flex-col items-center gap-4'>
                 <p className='text-sm font-normal text-zinc-500'>
                     You reached the wrong place try going back to the{' '}
-                    <Link className='text-sm font-medium px-3 py-1 text-zinc-300 border border-zinc-800 rounded bg-white/[0.04]' to='/'>
+                    <StyledLink to='/'>
                         Landing Page
-                    </Link>
+                    </StyledLink>
                 </p>
             </div>
         </div>
